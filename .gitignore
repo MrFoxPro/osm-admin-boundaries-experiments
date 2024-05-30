@@ -1,0 +1,8 @@
+/target
+*.pbf
+*.osm
+*.csv
+*.geojson
+*.json
+*.poly
+.vscode
