@@ -6,7 +6,7 @@ use serde::Deserialize;
 
 use crate::{eject, AdminRegion};
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct PlanetExtractedAdminRegion {
     #[serde(deserialize_with = "deserialize_geometry")]
     pub geometry: Geometry<f64>,
@@ -33,38 +33,34 @@ impl AdminRegion for PlanetExtractedAdminRegion {
     }
 }
 
-pub fn load_planet_extracted_admin_places() -> anyhow::Result<Vec<PlanetExtractedAdminRegion>> {
-    let files = std::fs::read_dir("./extracted/al234.extract_full2")?
-        .filter(|f| f.as_ref().unwrap().path().extension().unwrap() == "geojson")
-        .collect::<Vec<_>>();
+pub fn load_planet_extracted_places() -> anyhow::Result<Vec<PlanetExtractedAdminRegion>> {
+    let str = std::fs::read_to_string("./extracted/places.geojson")?;
+    let geojson = geojson::FeatureCollection::from_str(&str)?;
 
-    let mut output = Vec::with_capacity(files.len());
-    for file in files.into_iter() {
-        let file = file?;
-        let value = serde_json::from_str::<serde_json::Value>(&std::fs::read_to_string(file.path())?);
+    let mut output = Vec::with_capacity(geojson.features.len());
 
-        let Ok(value) = value else {
-            eprintln!("failed to parse file {:#?}: {}", file.path(), value.err().unwrap());
+    for feature in geojson.features {
+        let properties: HashMap<String, String> =
+            serde_json::from_value(serde_json::to_value(feature.properties.as_ref().unwrap())?)?;
+
+        let Some(admin_level) = properties
+            .get("admin_level")
+            .and_then(|s| u8::from_str(s).ok())
+        else {
+            eprintln!("no admin_level in {:#?}", feature);
             continue;
         };
 
-        let geometry = geojson::Geometry::from_json_value(value["geometry"].clone())?;
-        let tags = serde_json::from_value::<HashMap<String, String>>(value["properties"].clone())?;
-
-        let Some(name) = tags.get("name") else {
-            eprintln!("no name in {:#?}", file.path());
-            continue;
-        };
-        let Some(admin_level) = tags.get("admin_level").and_then(|s| u8::from_str(s).ok()) else {
-            eprintln!("no admin_level in {:#?}", file.path());
+        let Some(name) = properties.get("name").map(ToOwned::to_owned) else {
+            eprintln!("no name in {:#?}", feature);
             continue;
         };
 
         output.push(PlanetExtractedAdminRegion {
-            name: name.to_string(),
+            name,
             admin_level,
-            geometry: geometry.try_into()?,
-            tags,
+            geometry: feature.geometry.unwrap().try_into()?,
+            tags: properties,
         });
     }
 

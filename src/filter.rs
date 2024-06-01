@@ -33,6 +33,11 @@ pub fn filter(input: &str, output: &str) {
                         }
                     }
                 }
+                Element::Way { ref way } => {
+                    preserve = way.tags().iter().any(|t| {
+                        [("boundary", "administrative"), ("natural", "coastline")].contains(&(t.k().as_str(), t.v().as_str()))
+                    });
+                }
                 _ => {}
             }
 

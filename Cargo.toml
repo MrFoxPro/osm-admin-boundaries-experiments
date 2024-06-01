@@ -18,3 +18,4 @@ anyhow = "1.0.86"
 serde = { version = "1.0.203", features = ["derive"] }
 geo-types = "0.7.13"
 rayon = "1.10.0"
+osmpbfreader = "0.16.1"
