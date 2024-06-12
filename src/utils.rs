@@ -4,7 +4,7 @@ use geo::{Contains, Geometry, Point};
 
 fn combine_extracts() -> anyhow::Result<()> {
     let files = std::fs::read_dir("/home/foxpro/misc/osm/al234.extract_full")?
-        .filter(|p| p.as_ref().clone().unwrap().path().extension().unwrap() == "geojson")
+        .filter(|p| p.as_ref().unwrap().path().extension().unwrap() == "geojson")
         .map(Result::unwrap)
         .collect::<Vec<_>>();
 
@@ -19,7 +19,7 @@ fn combine_extracts() -> anyhow::Result<()> {
         }
     }
     std::fs::write("al234.extract.json", serde_json::to_string(&items)?)?;
-    return Ok(());
+    Ok(())
 }
 
 fn check_random_thing() -> anyhow::Result<()> {
@@ -31,7 +31,7 @@ fn check_random_thing() -> anyhow::Result<()> {
         _ => todo!(),
     };
 
-    if fc.features.len() == 0 {
+    if fc.features.is_empty() {
         println!("skip fc {fc}");
     }
     for c in fc.features.iter() {
@@ -41,5 +41,5 @@ fn check_random_thing() -> anyhow::Result<()> {
             println!("place containing oxford: {}", c.properties.clone().unwrap()["tags"]["name"]);
         }
     }
-    return Ok(());
+    Ok(())
 }

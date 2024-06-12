@@ -1,6 +1,8 @@
 # https://rust-lang.github.io/rustfmt/?version=master
-hard_tabs = true
-max_width = 110
+unstable_features = true
+edition = "2021"
+
+max_width = 220
 imports_granularity = "Crate"
 group_imports = "StdExternalCrate"
 reorder_imports = true
@@ -8,11 +10,14 @@ reorder_modules = true
 reorder_impl_items = true
 
 use_field_init_shorthand = true
-# trailing_comma = "Never"
+trailing_comma = "Vertical"
 
 skip_macro_invocations = ["*"]
 format_generated_files = false
 single_line_if_else_max_width = 0
 format_strings = false
-
+control_brace_style = "ClosingNextLine"
+overflow_delimited_expr = true
+use_small_heuristics = "Max"
+fn_args_layout = "Compressed"
 disable_all_formatting = true

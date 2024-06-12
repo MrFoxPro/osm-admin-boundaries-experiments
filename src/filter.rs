@@ -2,11 +2,6 @@ use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 use std::thread::available_parallelism;
 
-use osm_io::osm::{
-    model::element::Element,
-    pbf::{compression_type::CompressionType, file_info::FileInfo, reader::Reader, writer::Writer},
-};
-
 pub fn filter(input: &str, output: &str) {
     let reader = Reader::new(&PathBuf::from(input)).unwrap();
 
