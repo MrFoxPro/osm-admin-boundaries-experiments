@@ -1,4 +1,3 @@
-use geo::Coord;
 use osmpbfreader::{Node, NodeId};
 
 pub fn merge_nodes(nodes: Vec<Vec<Node>>) -> Vec<Vec<Node>> {
@@ -70,8 +69,4 @@ fn find_match(node_id: NodeId, nodes: &mut Vec<Vec<Node>>) -> Option<Vec<Node>> 
 	}
 
 	None
-}
-
-pub fn convert_nodes_to_points(nodes: &Vec<Node>) -> Vec<Coord> {
-	nodes.iter().map(|node| geo::Coord { x: node.lon(), y: node.lat() }).collect()
 }
